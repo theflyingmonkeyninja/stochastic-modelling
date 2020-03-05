@@ -3,7 +3,10 @@
 conatins files on stochastic modelling of 
 stocks
 european options
-american options by longstaff schwarts monte carlo
-interest rates by CIR, vaseichick 
+american options
 
-and solving of stochastic differential equation by euler maruyama
+Longstaff schwartz and binomial model
+
+interest rates modelling by CIR, Vaseichek 
+
+solving of stochastic differential equation by euler maruyama
