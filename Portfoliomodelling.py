@@ -68,7 +68,7 @@ def Portfoliorisk(wts,risk,cov):
         
         
         # sum of w^2\sigma^2
-        sigmaii = np.sum(np.dot(wts**2,risk**2),1);
+        sigmaii = np.dot(wts**2,risk**2);
     
         j = 1;
         sigmaij = np.zeros((1000,len(risk)),float) 
@@ -142,22 +142,22 @@ c42 = cov(slret4,s4ret,slret2,s2ret);
 c43 = cov(slret4,s4ret,slret3,s3ret);
 
 ## the covariance matrix can also be obtained by taking svd of AA^T where A is the matrix of stocksxreturns
-#Cov = np.array([[1, c12, c13, c14],[c12, 1, c32 ,c42],[c13, c32, 1, c43],[c14, c42, c43, 1]]); 
+Cov = np.array([[1, c12, c13, c14],[c12, 1, c32 ,c42],[c13, c32, 1, c43],[c14, c42, c43, 1]]); 
 
-#Risk = [s1risk, s2risk, s3risk, s4risk]; 
-#Ret  = [s1ret, s2ret, s3ret, s4ret];
+Risk = np.array([s1risk, s2risk, s3risk, s4risk]); 
+Ret  = np.array([s1ret, s2ret, s3ret, s4ret]);
 
-Cov = c12;
-Risk = [s1risk,s2risk]; 
-Ret  = [s1ret,s2ret];
+#Cov = c12;
+#Risk = [s1risk,s2risk]; 
+#Ret  = [s1ret,s2ret];
 
 
 ## geting portfolio risk and return
-PFret, swts = Portfolioreturns(Ret);
-PFrisk = Portfoliorisk(swts,Risk,Cov); 
+PFRet, swts = Portfolioreturns(Ret);
+PFRisk = Portfoliorisk(swts,Risk,Cov); 
         
       
-plt.plot(PFrisk, PFret)
+plt.plot(np.transpose(PFRisk), np.transpose(PFRet))
         
     
     
