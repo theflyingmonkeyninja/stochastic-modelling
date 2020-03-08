@@ -47,7 +47,7 @@ def Portfolioreturns(ret):
         wts = [w1,w2];
     else:
         # weights such that their column sum is 1 where column size is given by len(ret)
-        wts = np.random.dirichlet(np.ones(len(ret)),size=1000);
+        wts = np.random.dirichlet(np.ones(len(ret)),size=10000*len(ret));
                 
         for i in range(1,len(ret)):
             
@@ -71,7 +71,7 @@ def Portfoliorisk(wts,risk,cov):
         sigmaii = np.dot(wts**2,risk**2);
     
         j = 1;
-        sigmaij = np.zeros((1000,len(risk)),float) 
+        sigmaij = np.zeros((10000*len(risk),len(risk)),float) 
         for i in range(len(risk)):
             if i<j:
                 sigmaij[:,i]=wts[:,i]*wts[:,j]*cov[i,j];
@@ -103,7 +103,7 @@ st1 = yf.download('MSFT','2018-01-01','2020-01-01')
 st2 = yf.download('NFLX','2018-01-01','2020-01-01')
 st3 = yf.download('GE','2018-01-01','2020-01-01')
 st4 = yf.download('AMZN','2018-01-01','2020-01-01')
-st5 = yf.download('GE','2018-01-01','2020-01-01')
+st5 = yf.download('AAPL','2018-01-01','2020-01-01')
 
  
 stock1 = st1.to_numpy(); stock1 = stock1[:,2];
@@ -157,7 +157,7 @@ PFRet, swts = Portfolioreturns(Ret);
 PFRisk = Portfoliorisk(swts,Risk,Cov); 
         
       
-plt.plot(np.transpose(PFRisk), np.transpose(PFRet))
+plt.scatter(PFRisk,100*PFRet)
         
     
     
