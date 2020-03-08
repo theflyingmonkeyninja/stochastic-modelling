@@ -41,48 +41,48 @@ def returns(s):
 def Portfolioreturns(ret):
     # weights of the assets
     if len(ret) == 2:
-        w1 = np.linspace(-1,1,1000);
+        w1 = np.linspace(0,1,1000);
         w2 = 1-w1;
         EPFret = np.multiply(w1,ret[0])+np.multiply(w2,ret[1]);
-        wwt = [w1,w2];
+        wts = [w1,w2];
     else:
-        w = np.linspace(0,1,len(ret));
-        w = w/np.sum(w);
-        wwt = np.zeros((len(ret),len(ret)),float);
-        wwt[:,0] = w;
-        
+        # weights such that their column sum is 1 where column size is given by len(ret)
+        wts = np.random.dirichlet(np.ones(len(ret)),size=1000);
+                
         for i in range(1,len(ret)):
-            wwt[:,i] = np.roll(w,-i);
-            EPFret = np.dot(wwt,ret);
+            
+            EPFret = np.dot(wts,ret);
    
         
-    return EPFret,wwt;
+    return EPFret,wts;
 
 # computing porfolio risk by use of formula \sigma(aX+bY) = \sqrt(a^2 \sigma(X)^2+b^2 \sigma(Y)^2+2ab \sigma(X,Y)
 # risk is vector of riskyness of assets and cov is covariance between assets
-def Portfoliorisk(wwt,risk,cov):
+def Portfoliorisk(wts,risk,cov):
     if len(risk)==2:
-        w1 = np.linspace(-1,1,1000);
+        w1 = np.linspace(0,1,1000);
         w2 = 1-w1;
         
         EPFrisk = np.sqrt((np.multiply(w1,risk[0]))**2+2*cov*w1*w2+(np.multiply(w2,risk[1])**2)); 
     else:
         
-        EPFrisk = np.zeros((len(risk)),float);
-        pfcov = np.zeros((len(risk)),float);
+        
+        # sum of w^2\sigma^2
+        sigmaii = np.sum(np.dot(wts**2,risk**2),1);
     
-        temp = 0;
-      
+        j = 1;
+        sigmaij = np.zeros((1000,len(risk)),float) 
         for i in range(len(risk)):
-            wt = wwt[:,i];
-            for j in range(len(risk)):
-                for k in range(len(risk)):
-                    if j<k:
-                        temp =temp+wt[j]*wt[k]*cov[j,k]
-                        pfcov[i] = temp;
-                            
-        for i in range(len(risk)):
-            EPFrisk[i] = np.sqrt(((wwt[i,:]*risk)**2)+2*pfcov[i]);
+            if i<j:
+                sigmaij[:,i]=wts[:,i]*wts[:,j]*cov[i,j];
+                if j==len(risk):
+                    j=0;
+                    
+                j = j+i;
+       
+        sigmaij = np.sum(sigmaij,1);
+               
+        EPFrisk = np.sqrt(sigmaii+sigmaij);    
         
     return EPFrisk
         
@@ -99,9 +99,9 @@ def Portfoliorisk(wwt,risk,cov):
 import yfinance as yf  
      
 # Get the data for the stock Apple by specifying the stock ticker, start date, and end date
-st1 = yf.download('TSLA','2018-01-01','2020-01-01')
-st2 = yf.download('AAPL','2018-01-01','2020-01-01')
-st3 = yf.download('GM','2018-01-01','2020-01-01')
+st1 = yf.download('MSFT','2018-01-01','2020-01-01')
+st2 = yf.download('NFLX','2018-01-01','2020-01-01')
+st3 = yf.download('GE','2018-01-01','2020-01-01')
 st4 = yf.download('AMZN','2018-01-01','2020-01-01')
 st5 = yf.download('GE','2018-01-01','2020-01-01')
 
