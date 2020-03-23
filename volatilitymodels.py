@@ -20,7 +20,7 @@ def historicalvolatility(s):
     
     ret = np.log10(s[1:]/s[:-1]); 
     
-    ret = np.sort(ret);
+    sortret = np.sort(ret);
     
     histrisk = ret[ind]
     
@@ -32,25 +32,33 @@ def historicalvolatility(s):
              
     
     
-    return paramrisk, histrisk,ret;
+    return paramrisk, histrisk,sortret,ret;
 
 
-def GarchVol(ret,s):
+def GarchVol(ret):
 	model = pf.GARCH(ret,p=1,q=1);
 	x = model.fit();
 	assert(len(model.latent_variables.z_list) == 4);
 	lvs = np.array([i.value for i in model.latent_variables.z_list]);
 	assert(len(lvs[np.isnan(lvs)]) == 0)
-	return x
+	return x, model
 
 
 # Get the data for the stock Apple by specifying the stock ticker, start date, and end date
-st1 = yf.download('TSLA','2014-01-01','2020-01-01')
+st1 = yf.download('^NYA','2017-01-01','2020-3-23')
 s = st1.to_numpy(); 
 s = s[:,2]; r = np.log10(s[1:]/s[:-1]); 
-p,h,r = historicalvolatility(s)
+p,h,sr,r = historicalvolatility(s)
 
 #plt.hist(r)
 
-x = GarchVol(r,s)
+x, model = GarchVol(r)
 print(x.summary())
+
+plt.plot(r);
+plt.show();
+
+plt.plot((r**2));
+plt.show();
+
+model.plot_fit();
